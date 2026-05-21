@@ -35,20 +35,25 @@ namespace EmployeeManagement.Controllers
 
         }
 
-        //// GET: api/employees/{id}
-        //[HttpGet("{id}")]
-        //public IActionResult GetById(int id)
-        //{
+        // GET: api/employees/{id}
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
 
-        //    var existing_employee = _employees.FirstOrDefault(e => e.Id == id);
+            string query = "SELECT * FROM employees WHERE Id = @id";
+            using (var connection = new SqlConnection(_connectionString))
+            {
 
-        //    if (existing_employee == null)
-        //    {
-        //        return NotFound();
-        //    }
+                var employee = connection.Query<Employee>(query, new { id });
 
-        //    return Ok(existing_employee);
-        //}
+                if(employee == null)
+                {
+                    return NotFound();
+                }
+
+                return Ok(employee);
+            }
+        }
 
 
         //// POST: api/employees
