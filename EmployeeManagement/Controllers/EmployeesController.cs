@@ -22,6 +22,22 @@ namespace EmployeeManagement.Controllers
             return Ok(_employees); // 200 OK with JSON DATA
         }
 
+        // GET: api/employees/{id}
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+
+            var existing_employee = _employees.FirstOrDefault(e => e.Id == id);
+
+            if (existing_employee == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(existing_employee);
+        }
+
+
         // POST: api/employees
         public IActionResult Create([FromBody] Employee newEmp)
         {
