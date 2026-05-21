@@ -67,5 +67,19 @@ namespace EmployeeManagement.Controllers
             return NoContent();
         }
 
+
+        // DELETE: /api/employees/{id}
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var emp = _employees.FirstOrDefault(e => e.Id == id);
+            if(emp == null)
+            {
+                return NotFound();
+            }
+
+            _employees.Remove(emp);
+            return NoContent();
+        }
     }
 }
