@@ -77,24 +77,30 @@ namespace EmployeeManagement.Controllers
         }
 
 
-        //// PUT: api/employees/{id
-        //[HttpPut("{id}")]
-        //public IActionResult Update(int id, [FromBody] Employee updatedEmp)
-        //{
-        //    var existing_emp = _employees.FirstOrDefault(e => e.Id == id);
+        // PUT: api/employees/{id
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] Employee updatedEmp)
+        {
+            string query = @"
+                            UPDATE employees
+                            SET Name = @Name, Department = @Department, Role = @Role
+                            WHERE Id = @Id
+                            ";
 
-        //    if(existing_emp == null)
-        //    {
-        //        return NotFound();
-        //    }
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                updatedEmp.Id = id;
 
-        //    // Found and update
-        //    existing_emp.Name = updatedEmp.Name;
-        //    existing_emp.Department = updatedEmp.Department;
-        //    existing_emp.Role = updatedEmp.Role;
+                int rowsAffected = connection.Execute(query, updatedEmp);
 
-        //    return NoContent();
-        //}
+                if(rowsAffected == 0)
+                {
+                    return NotFound();
+                }
+
+                return NoContent();
+            }
+        }
 
 
         //// DELETE: /api/employees/{id}
