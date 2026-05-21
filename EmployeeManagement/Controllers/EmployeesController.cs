@@ -56,14 +56,25 @@ namespace EmployeeManagement.Controllers
         }
 
 
-        //// POST: api/employees
-        //[HttpPost]
-        //public IActionResult Create([FromBody] Employee newEmp)
-        //{
-        //    newEmp.Id = _employees.Count + 1;
-        //    _employees.Add(newEmp);
-        //    return CreatedAtAction(nameof(GetAll), new { id = newEmp.Id }, newEmp);
-        //}
+        // POST: api/employees
+        [HttpPost]
+        public IActionResult Create([FromBody] Employee newEmp)
+        {
+            string query = @"
+                              INSERT INTO employees(Name, Department, Role) 
+                              OUTPUT INSERTED.Id
+                              VALUES(@Name, @Department, @Role);
+                             ";
+
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                int insertedId = connection.QuerySingle<int>(query, newEmp);
+
+                newEmp.Id = insertedId;
+
+                return CreatedAtAction(nameof(GetAll), new { id = newEmp.Id }, newEmp);
+            }
+        }
 
 
         //// PUT: api/employees/{id
