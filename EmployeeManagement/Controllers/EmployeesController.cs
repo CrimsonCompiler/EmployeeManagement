@@ -103,18 +103,23 @@ namespace EmployeeManagement.Controllers
         }
 
 
-        //// DELETE: /api/employees/{id}
-        //[HttpDelete("{id}")]
-        //public IActionResult Delete(int id)
-        //{
-        //    var emp = _employees.FirstOrDefault(e => e.Id == id);
-        //    if(emp == null)
-        //    {
-        //        return NotFound();
-        //    }
+        // DELETE: api/employees/{id}
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            string query = "DELETE FROM Employees WHERE Id = @Id";
 
-        //    _employees.Remove(emp);
-        //    return NoContent();
-        //}
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                int rowsAffected = connection.Execute(query, new { Id = id });
+
+                if (rowsAffected == 0)
+                {
+                    return NotFound();
+                }
+
+                return NoContent(); // 204 No Content
+            }
+        }
     }
 }
