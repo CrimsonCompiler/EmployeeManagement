@@ -39,12 +39,33 @@ namespace EmployeeManagement.Controllers
 
 
         // POST: api/employees
+        [HttpPost]
         public IActionResult Create([FromBody] Employee newEmp)
         {
             newEmp.Id = _employees.Count + 1;
             _employees.Add(newEmp);
             return CreatedAtAction(nameof(GetAll), new { id = newEmp.Id }, newEmp);
-        } 
+        }
+
+
+        // PUT: api/employees/{id
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, [FromBody] Employee updatedEmp)
+        {
+            var existing_emp = _employees.FirstOrDefault(e => e.Id == id);
+
+            if(existing_emp == null)
+            {
+                return NotFound();
+            }
+
+            // Found and update
+            existing_emp.Name = updatedEmp.Name;
+            existing_emp.Department = updatedEmp.Department;
+            existing_emp.Role = updatedEmp.Role;
+
+            return NoContent();
+        }
 
     }
 }
