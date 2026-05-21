@@ -2,6 +2,8 @@
 using EmployeeManagement.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Data.SqlClient;
+using Dapper;
 
 namespace EmployeeManagement.Controllers
 {
@@ -9,77 +11,88 @@ namespace EmployeeManagement.Controllers
     [Route("/api/[controller]")]
     public class EmployeesController : ControllerBase
     {
-        private static List<Employee> _employees = new List<Employee>
-       {
-           new Employee{Id = 1, Name = "Tousif", Department="Engineering", Role="Backend Dev"},
-           new Employee{Id = 2, Name = "Karim", Department="HR", Role="Manager"}
-       };
+        private readonly string _connectionString;
+
+        public EmployeesController(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
 
         // GET: api/employees
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(_employees); // 200 OK with JSON DATA
-        }
+            //return Ok(_employees); // 200 OK with JSON DATA
 
-        // GET: api/employees/{id}
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
-        {
+            string query = "SELECT * FROM employees";
 
-            var existing_employee = _employees.FirstOrDefault(e => e.Id == id);
-
-            if (existing_employee == null)
+            using(var connection = new SqlConnection(_connectionString))
             {
-                return NotFound();
+                var employees = connection.Query<Employee>(query).ToList();
+
+                return Ok(employees);
             }
 
-            return Ok(existing_employee);
         }
 
+        //// GET: api/employees/{id}
+        //[HttpGet("{id}")]
+        //public IActionResult GetById(int id)
+        //{
 
-        // POST: api/employees
-        [HttpPost]
-        public IActionResult Create([FromBody] Employee newEmp)
-        {
-            newEmp.Id = _employees.Count + 1;
-            _employees.Add(newEmp);
-            return CreatedAtAction(nameof(GetAll), new { id = newEmp.Id }, newEmp);
-        }
+        //    var existing_employee = _employees.FirstOrDefault(e => e.Id == id);
 
+        //    if (existing_employee == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-        // PUT: api/employees/{id
-        [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Employee updatedEmp)
-        {
-            var existing_emp = _employees.FirstOrDefault(e => e.Id == id);
-
-            if(existing_emp == null)
-            {
-                return NotFound();
-            }
-
-            // Found and update
-            existing_emp.Name = updatedEmp.Name;
-            existing_emp.Department = updatedEmp.Department;
-            existing_emp.Role = updatedEmp.Role;
-
-            return NoContent();
-        }
+        //    return Ok(existing_employee);
+        //}
 
 
-        // DELETE: /api/employees/{id}
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            var emp = _employees.FirstOrDefault(e => e.Id == id);
-            if(emp == null)
-            {
-                return NotFound();
-            }
+        //// POST: api/employees
+        //[HttpPost]
+        //public IActionResult Create([FromBody] Employee newEmp)
+        //{
+        //    newEmp.Id = _employees.Count + 1;
+        //    _employees.Add(newEmp);
+        //    return CreatedAtAction(nameof(GetAll), new { id = newEmp.Id }, newEmp);
+        //}
 
-            _employees.Remove(emp);
-            return NoContent();
-        }
+
+        //// PUT: api/employees/{id
+        //[HttpPut("{id}")]
+        //public IActionResult Update(int id, [FromBody] Employee updatedEmp)
+        //{
+        //    var existing_emp = _employees.FirstOrDefault(e => e.Id == id);
+
+        //    if(existing_emp == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    // Found and update
+        //    existing_emp.Name = updatedEmp.Name;
+        //    existing_emp.Department = updatedEmp.Department;
+        //    existing_emp.Role = updatedEmp.Role;
+
+        //    return NoContent();
+        //}
+
+
+        //// DELETE: /api/employees/{id}
+        //[HttpDelete("{id}")]
+        //public IActionResult Delete(int id)
+        //{
+        //    var emp = _employees.FirstOrDefault(e => e.Id == id);
+        //    if(emp == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    _employees.Remove(emp);
+        //    return NoContent();
+        //}
     }
 }
