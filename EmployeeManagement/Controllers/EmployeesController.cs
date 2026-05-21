@@ -5,11 +5,30 @@ using System.Linq;
 
 namespace EmployeeManagement.Controllers
 {
-    public class EmployeesController : Controller
+    [ApiController]
+    [Route("/api/[controller]")]
+    public class EmployeesController : ControllerBase
     {
-        public IActionResult Index()
+        private static List<Employee> _employees = new List<Employee>
+       {
+           new Employee{Id = 1, Name = "Tousif", Department="Engineering", Role="Backend Dev"},
+           new Employee{Id = 2, Name = "Karim", Department="HR", Role="Manager"}
+       };
+
+        // GET: api/employees
+        [HttpGet]
+        public IActionResult GetAll()
         {
-            return View();
+            return Ok(_employees); // 200 OK with JSON DATA
         }
+
+        // POST: api/employees
+        public IActionResult Create([FromBody] Employee newEmp)
+        {
+            newEmp.Id = _employees.Count + 1;
+            _employees.Add(newEmp);
+            return CreatedAtAction(nameof(GetAll), new { id = newEmp.Id }, newEmp);
+        } 
+
     }
 }
