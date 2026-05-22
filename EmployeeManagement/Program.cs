@@ -1,3 +1,5 @@
+using EmployeeManagement.Repositories;
+
 namespace EmployeeManagement
 {
     public class Program
@@ -12,6 +14,9 @@ namespace EmployeeManagement
             // Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // Repository Register
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
 
             var app = builder.Build();
