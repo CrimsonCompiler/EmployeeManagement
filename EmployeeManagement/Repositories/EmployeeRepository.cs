@@ -31,7 +31,7 @@ namespace EmployeeManagement.Repositories
         {
             using var connection = Connection;
             string query = "INSERT INTO employees(Name, Department, Role) OUTPUT INSERTED.Id VALUES(@Name, @Department, @Role);";
-            return connection.QuerySingle(query, employee );
+            return connection.QuerySingle<int>(query, employee );
         }
         public bool Update(Employee employee)
         {

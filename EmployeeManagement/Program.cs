@@ -8,6 +8,16 @@ namespace EmployeeManagement
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                });
+            });
+
+
             // 1. Dependecny Injection 
             builder.Services.AddControllers();
 
@@ -31,6 +41,8 @@ namespace EmployeeManagement
 
             // 2. Http Request Routing middleware active
             app.UseRouting();
+
+            app.UseCors("AllowFrontend");
 
             // 3. Mapping the controllers endpoint
             app.MapControllers();
