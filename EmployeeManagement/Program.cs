@@ -62,6 +62,10 @@ namespace EmployeeManagement
 
             app.UseCors("AllowFrontend");
 
+            // Authentication
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             // 3. Mapping the controllers endpoint
             app.MapControllers();
 
