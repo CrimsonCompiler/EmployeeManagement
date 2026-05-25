@@ -1,13 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Dapper;
 using EmployeeManagement.Models;
+using EmployeeManagement.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Data.SqlClient;
-using Dapper;
-using EmployeeManagement.Repositories;
 
 namespace EmployeeManagement.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("/api/[controller]")]
     public class EmployeesController : ControllerBase
