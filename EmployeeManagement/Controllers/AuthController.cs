@@ -45,6 +45,18 @@ namespace EmployeeManagement.Controllers
                 new Claim(ClaimTypes.Role, "Admin"),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
+
+
+
+            // Making the token
+            var token = new JwtSecurityToken(
+                issuer: _configuration["JwtSettings:Issuer"],
+                audience: _configuration["JwtSettings:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(double.Parse(_configuration["JwtSettings:DurationInMinutes"])),
+                signingCredentials: credentials);
+            
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
 
