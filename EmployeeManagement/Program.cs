@@ -73,7 +73,7 @@ namespace EmployeeManagement
 
             // Repository Register
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             var app = builder.Build();
 
