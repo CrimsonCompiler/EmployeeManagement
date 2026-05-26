@@ -1,4 +1,5 @@
 ﻿using EmployeeManagement.Models;
+using EmployeeManagement.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -13,28 +14,33 @@ namespace EmployeeManagement.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration  _configuration;
+        private readonly IUserRepository _userRepository;
 
 
         // Using DI to read JWT settings
-        public AuthController(IConfiguration configuration)
+        public AuthController(IConfiguration configuration, IUserRepository userRepository)
         {
                _configuration = configuration;
+               _userRepository = userRepository;
         }
 
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginModel login)
         {
-            if(login.Username == "admin" && login.Password == "1234")
+           // asking the repo
+           var user = _userRepository.GetUserCredentials(login.Username, login.Password);
+
+            if (user != null) 
             {
-                var tokenString = GenerateJwtToken(login.Username);
-                return Ok(new { Token = tokenString });
+                var tokenString = GenerateJwtToken(user.Username, user.Role);
+                return Ok(new {Token = tokenString});
             }
 
             return Unauthorized("Invalid Credentials");
         }
 
 
-        private string GenerateJwtToken(string username)
+        private string GenerateJwtToken(string username, string role)
         {
             // step - 1 Setup secret key and algorithm ( signature )
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:Key"]));
@@ -43,7 +49,7 @@ namespace EmployeeManagement.Controllers
             // Claims / Payload - store user information
             var claims = new[] { 
                 new Claim(JwtRegisteredClaimNames.Sub, username),
-                new Claim(ClaimTypes.Role, "Admin"),
+                new Claim(ClaimTypes.Role, role),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
